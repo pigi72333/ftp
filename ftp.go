@@ -478,6 +478,26 @@ func (c *ServerConn) StorFrom(path string, r io.Reader, offset uint64) error {
 	return err
 }
 
+func (c *ServerConn) StorBuffer(path string, r io.Reader, buf []byte) error {
+	return c.StorFromBuffer(path, r, 0, buf)
+}
+
+func (c *ServerConn) StorFromBuffer(path string, r io.Reader, offset uint64, buf []byte) error {
+	conn, err := c.cmdDataConnFrom(offset, "STOR %s", path)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.CopyBuffer(conn, r, buf)
+	conn.Close()
+	if err != nil {
+		return err
+	}
+
+	_, _, err = c.conn.ReadResponse(StatusClosingDataConnection)
+	return err
+}
+
 // Rename renames a file on the remote FTP server.
 func (c *ServerConn) Rename(from, to string) error {
 	_, _, err := c.cmd(StatusRequestFilePending, "RNFR %s", from)
