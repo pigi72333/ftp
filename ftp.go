@@ -578,9 +578,7 @@ func (c *ServerConn) RemoveDir(path string) error {
 		return err
 	}
 	switch code {
-	case StatusPathCreated:
-		return nil
-	case StatusCommandOK:
+	case StatusPathCreated,StatusRequestedFileActionOK,StatusCommandOK:
 		return nil
 	}
 	return errors.New(message)
