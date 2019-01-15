@@ -105,6 +105,9 @@ func DialTimeout(addr string, timeout time.Duration) (*ServerConn, error) {
 	if _, mlstSupported := c.features["MLST"]; mlstSupported {
 		c.mlstSupported = true
 	}
+	if _, mlstSupported := c.features["MLSD"]; mlstSupported {
+		c.mlstSupported = true
+	}
 
 	return c, nil
 }
