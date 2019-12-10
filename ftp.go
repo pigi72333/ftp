@@ -516,8 +516,15 @@ func (c *ServerConn) Rename(from, to string) error {
 // Delete issues a DELE FTP command to delete the specified file from the
 // remote FTP server.
 func (c *ServerConn) Delete(path string) error {
-	_, _, err := c.cmd(StatusRequestedFileActionOK, "DELE %s", path)
-	return err
+	code, message, err := c.cmd(-1, "DELE %s", path)
+	if err != nil {
+		return err 
+	}
+	switch code {
+	case StatusRequestedFileActionOK, StatusCommandOK:
+	    return nil
+	}
+	return errors.New(message)
 }
 
 // RemoveDirRecur deletes a non-empty folder recursively using
